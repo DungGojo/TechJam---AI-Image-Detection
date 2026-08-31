@@ -1,0 +1,46 @@
+# local virtual environment
+.venv/
+
+# data + heavy artefacts (never committed)
+# NOTE: leading slash matters -- a bare "data/" would also swallow src/data/.
+/data/
+/my-notebook/
+/cache/
+/weights/*
+!/weights/README.md
+!/weights/fusion/
+!/weights/fusion/selected_final_fusion.joblib
+!/weights/fusion/selected_final_fusion.json
+/outputs/
+/testing_images/
+/third_party/
+*.pt
+*.pth
+*.npy
+*.safetensors
+*.parquet
+
+# selected trained checkpoints are versioned with Git LFS
+!/weights/dinov3/
+!/weights/dinov3/notebook_dinov3/
+!/weights/dinov3/notebook_dinov3/best_robust.pt
+!/weights/stacking/
+!/weights/stacking/notebook_vitb/
+!/weights/stacking/notebook_vitb/best_robust.pt
+/weights/stacking/**/*.history.csv
+/weights/fusion/notebook_vitb_temperature.json
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+*.pt

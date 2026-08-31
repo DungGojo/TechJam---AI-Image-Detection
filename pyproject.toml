@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coding-aigc-detector"
+version = "0.1.0"
+description = "Real vs AI-generated image detection: three detectors fused into one verdict."
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[project.scripts]
+classify = "Workflows.classify:main"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["Data_Pipeline*", "Modeling*", "Evaluation*", "Workflows*"]

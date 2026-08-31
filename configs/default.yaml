@@ -1,0 +1,83 @@
+# Default configuration. Reviewable, reproducible, and the record of every
+# decision that would otherwise live only in a shell command.
+
+project:
+  name: Coding
+  seed: 1337
+
+hard_limits:
+  # SETUP.md §0.1 -- total parameters across every component at inference.
+  max_params: 2_000_000_000
+  # Local storage ceiling. The spec suggested ~80 GB; this laptop has ~71 GB
+  # free, so the working set is capped at 30 GB to leave room for the feature
+  # cache (§9), model weights and the OS.
+  max_data_bytes: 32_212_254_720   # 30 GiB
+  # SETUP.md §0.4 -- no global resize, ever. Enforced in code, not by habit.
+  allow_global_resize: false
+
+paths:
+  train: data/train
+  evaluation: data/evaluation
+  test: data/test
+  train_manifest: data/train/manifest.csv
+  validation_manifest: data/evaluation/validation_manifest.csv
+  benchmark_manifest: data/evaluation/benchmark_manifest.csv
+  test_manifest: data/test/manifest.csv
+  blocklist: data/evaluation/blocklists/sha256.txt
+  phash_blocklist: data/evaluation/blocklists/phash.txt
+  cache: cache
+  outputs: outputs
+
+data:
+  # Per-source download caps. Every download_*.py defaults to these.
+  limits:
+    cifake: 20000       # low-resolution diagnostic set -- excluded from the mix
+    sid_set: 60000      # §4.3
+    wildfake: 90000     # §4.4
+  per_generator: 3000   # §4.4 -- breadth of generators beats depth
+  # §4.2: 32x32 is below the resolution where compression artefacts live.
+  exclude_from_training_mix: [cifake]
+  # §4.3: locally tampered images are arguably neither class. Parked, not used.
+  sid_set_tampered_split: held
+
+splits:
+  train: 0.8
+  val: 0.2
+  max_class_imbalance: 0.60   # §3 -- validate() raises beyond 60/40
+
+# §4.6 -- partition GENERATORS, not images. Populated by
+# Data_Pipeline/sources/download_wildfake.py once the hierarchy is known; the held-out
+# families must be the most recent generators available.
+unseen_generators:
+  held_out: []      # -> split == 'test_unseen'
+  train_pool: []
+
+degradations:
+  # §5 -- exact parameters from the competition brief. The eval grid reads
+  # these; the training curriculum reads these; there is no second copy.
+  eval_grid:
+    jpeg:   {quality: [90, 70, 50, 30]}
+    blur:   {sigma: [0.5, 1.0, 2.0]}
+    resize: {scale: [0.5, 0.25]}
+    noise:  {sigma: [0.02, 0.05, 0.10]}
+    jitter: {strength: [0.20]}
+    crop:   {keep: [0.80]}
+  # §5 -- implemented but deliberately kept OUT of the eval grid, to measure
+  # generalisation beyond the published list.
+  held_out_transforms: [webp, sharpen]
+  curriculum:
+    clean: 0
+    mild: [1, 3]
+    heavy: [3, 6]
+
+eval:
+  primary_metric: roc_auc
+  fixed_fpr: [0.01, 0.05]
+
+features:
+  # §9 -- frozen backbone, multi-crop at NATIVE resolution.
+  backbone: vit_large_patch16_dinov3.lvd1689m
+  backbone_fallback: facebook/dinov2-large
+  crops_per_image: 5
+  crop_size: 224
+  dtype: float16

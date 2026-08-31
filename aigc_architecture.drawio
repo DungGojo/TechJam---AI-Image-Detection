@@ -1,0 +1,525 @@
+<mxfile host="app.diagrams.net" version="24.7.17">
+  <diagram name="1. Data and Splits" id="page-data">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="900" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Data Pipeline — Raw Archives to Validated Splits" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1400" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="remote archives → range-request download → manifest with hashes → five splits, leakage-checked" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1500" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_src" value="Sources  (Data_Pipeline/sources/)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="400" height="320" as="geometry" /></mxCell>
+        <mxCell id="wildfake" value="WildFake  (ModelScope)
+hy2628982280/WildFake
+28 GB of ZIP archives" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="135" width="340" height="75" as="geometry" /></mxCell>
+        <mxCell id="sidset" value="SID_Set  (Hugging Face)
+saberzl/SID_Set
+140 GB, streamed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="225" width="340" height="75" as="geometry" /></mxCell>
+        <mxCell id="coco" value="COCO val2017  (official)
+native resolution, 5,000 images" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="315" width="340" height="65" as="geometry" /></mxCell>
+        <mxCell id="remotezip" value="remote_zip.py   [requests]
+HTTP range requests over the ZIP
+central directory — fetch only the
+members needed, never the archive" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="490" y="150" width="300" height="110" as="geometry" /></mxCell>
+        <mxCell id="quarantine" value="Eval-only quarantine
+QUARANTINED_PREFIXES
+coco/coco2017/val2017/
+DALLE/Advanced/DALLE3/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="490" y="290" width="300" height="100" as="geometry" /></mxCell>
+        <mxCell id="g_man" value="Manifest construction  (Data_Pipeline/manifest.py)  [pandas · Pillow]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="850" y="90" width="400" height="320" as="geometry" /></mxCell>
+        <mxCell id="build" value="build_from_paths()
+per image: sha256, phash,
+width, height, source, generator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="880" y="135" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="clean" value="clean()
+drop unreadable and blocklisted rows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="880" y="230" width="340" height="55" as="geometry" /></mxCell>
+        <mxCell id="validate" value="validate()
+fails if one sha256 appears
+in more than one split" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="880" y="300" width="340" height="75" as="geometry" /></mxCell>
+        <mxCell id="blocklist" value="Blocklist
+sha256 + 64-bit DCT phash
+catches re-encoded near-duplicates
+that sha256 alone misses" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="490" y="430" width="300" height="100" as="geometry" /></mxCell>
+        <mxCell id="g_split" value="Splits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffbf0;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#7f6000;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1300" y="90" width="360" height="460" as="geometry" /></mxCell>
+        <mxCell id="s_train" value="train
+detector training" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1330" y="135" width="300" height="55" as="geometry" /></mxCell>
+        <mxCell id="s_val" value="val
+meta-dataset source (nb 03)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1330" y="205" width="300" height="55" as="geometry" /></mxCell>
+        <mxCell id="s_test" value="test_unseen
+held-out generator families" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1330" y="275" width="300" height="55" as="geometry" /></mxCell>
+        <mxCell id="s_held" value="held
+reserve" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1330" y="345" width="300" height="55" as="geometry" /></mxCell>
+        <mxCell id="s_eval" value="eval_only
+never trainable — benchmark set" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1330" y="415" width="300" height="55" as="geometry" /></mxCell>
+        <mxCell id="hw1" value="HARDWARE — this stage is network- and CPU-bound, no GPU required.
+Disk: ~2.9 GB for the eval-only set (COCO 0.07 GB + DALL·E 3 2.84 GB); a stratified WildFake training pull is budgeted at 15 GB by default." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="580" width="1620" height="45" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Leakage control is enforced, not documented: validate() raises when a sha256 straddles splits, and the phash blocklist catches WildFake shipping COCO train2017 and val2017 in one archive.
+UNSEEN_GENERATORS (GigaGAN, GALIP, MAGE, SDwithAdaptor_lycris, Midjourney_Advanced) are held out wholesale so no generator family appears in both train and test." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="645" width="1620" height="60" as="geometry" /></mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="wildfake" target="remotezip"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="sidset" target="remotezip"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="coco" target="remotezip"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="remotezip" target="build"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="hashes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="quarantine" target="blocklist"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="blocklist" target="clean"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="build" target="clean"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="clean" target="validate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="validate" target="s_train"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="validate" target="s_val"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="validate" target="s_test"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="validate" target="s_held"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="quarantine" target="s_eval"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="2. Branch Training" id="page-train">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="980" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Branch Training — Notebooks 01 and 02" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1400" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="two detectors trained on the train split; Community Forensics is used off the shelf and never trained here" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1500" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_dino" value="Notebook 01 — DINOv3-L Expert  (Modeling/dinov3/)  [PyTorch · timm]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="780" height="600" as="geometry" /></mxCell>
+        <mxCell id="d_data" value="train split → datasets.py
+native crop, clean + degraded view pair" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="340" height="65" as="geometry" /></mxCell>
+        <mxCell id="d_bb" value="DINOv3-L backbone   [timm]
+vit_large_patch16_dinov3.lvd1689m
+frozen · attention pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="235" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="d_fc" value="FeatureCorrection  (residual FFN)
+maps degraded features toward clean
+zero-initialised output layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="345" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="d_head" value="Classifier head
+head_hidden = 512, dropout 0.0
+→ one logit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="455" width="340" height="75" as="geometry" /></mxCell>
+        <mxCell id="d_loss" value="Robust loss
+BCE + clean/degraded consistency
+AdamW · AMP · warmup + cosine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="440" y="235" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="d_sel" value="Evaluation/training_validation.py
+clean + degradation grid
+select on robust AUC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="440" y="345" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="d_ckpt" value="weights/dinov3/notebook_dinov3/
+best_robust.pt   (1.2 GB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="440" y="455" width="340" height="75" as="geometry" /></mxCell>
+        <mxCell id="d_note" value="Inference uses 8 random 224px crops per image and averages the sigmoids.
+crop_mode = random_crop — images below 224px are TILED, not resized." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="60" y="560" width="720" height="55" as="geometry" /></mxCell>
+        <mxCell id="g_stack" value="Notebook 02 — DINOv3-B Stacking Head  (Modeling/stacking/)  [PyTorch · timm · transformers]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="860" y="90" width="800" height="600" as="geometry" /></mxCell>
+        <mxCell id="s_data" value="train split
+3 crops per image at 224px" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="140" width="340" height="65" as="geometry" /></mxCell>
+        <mxCell id="s_bb" value="FrozenBackbone   [timm]
+vit_base_patch16_dinov3.lvd1689m
+dim = 768 · never updated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="235" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="s_cf" value="Community Forensics   [transformers]
+P(fake) → logit
+extra_dim = 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1290" y="235" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="s_concat" value="Concat + normalise
+768 embedding + 1 expert logit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="345" width="740" height="60" as="geometry" /></mxCell>
+        <mxCell id="s_head" value="StackingHead MLP
+FeatureCorrection · head_hidden 256
+dropout 0.1 → one logit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="435" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="s_ckpt" value="weights/stacking/notebook_vitb/
+best_robust.pt   (9.8 MB)
+best_robust_auc = 0.9945" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1290" y="435" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="s_note" value="Only the head is trained — hence 9.8 MB against the expert's 1.2 GB. The frozen backbone is
+re-downloaded from timm at load time and is never stored in the checkpoint." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="890" y="545" width="740" height="55" as="geometry" /></mxCell>
+        <mxCell id="hw2" value="HARDWARE — training the DINOv3-L branch is intended for a CUDA GPU (AMP mixed precision; the 300M-parameter backbone plus activations is the memory driver).
+The stacking branch is TWO phases with different needs. Phase 1, Workflows/cache_features.py: the frozen ViT-B and the Community Forensics expert run over every training image × 3 crops × 3 variants (clean, jpeg=50, blur=1.0) — nine backbone forwards per image, and firmly GPU work. Phase 2, head.fit(): reads those cached float16 features, batch 1024, 30 epochs, and only the 768→256 MLP takes gradients — that phase alone is CPU-feasible." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="720" width="1620" height="50" as="geometry" /></mxCell>
+        <mxCell id="note2" value="Both checkpoints are selected on robustness (a degradation grid: JPEG, blur, downscale, noise), not on clean accuracy. A detector that only works on pristine images is of no use on images that have been through a social feed." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="790" width="1620" height="40" as="geometry" /></mxCell>
+        <mxCell id="f1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_data" target="d_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_bb" target="d_fc"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_fc" target="d_head"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_head" target="d_loss"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_loss" target="d_sel"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="d_sel" target="d_ckpt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="s_data" target="s_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="s_bb" target="s_concat"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="s_cf" target="s_concat"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="s_concat" target="s_head"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="s_head" target="s_ckpt"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="3. Fusion Selection" id="page-fusion">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="900" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Fusion Selection — Notebooks 03 and 04" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1400" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="2,000-image meta-dataset → ten candidate fusions → 5-fold CV on development only → one refit model" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1500" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_meta" value="Notebook 03 — Meta-dataset" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffbf0;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#7f6000;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="520" height="440" as="geometry" /></mxCell>
+        <mxCell id="m_val" value="val manifest
+sampled across source/generator groups
+so no large group dominates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="460" height="75" as="geometry" /></mxCell>
+        <mxCell id="m_bal" value="1,000 real (0)  +  1,000 fake (1)
+balanced, reproducible, seed 1337" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="240" width="460" height="60" as="geometry" /></mxCell>
+        <mxCell id="m_score" value="Score all three branches
+models built and released one at a time
+to bound peak memory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="325" width="460" height="75" as="geometry" /></mxCell>
+        <mxCell id="m_csv" value="Four columns:
+CF Pr · DINOv3-L Pr · DINOv3-B Pr  +  ground truth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="425" width="460" height="60" as="geometry" /></mxCell>
+        <mxCell id="g_sel" value="Notebook 04 — Model selection   [scikit-learn · xgboost]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="600" y="90" width="1060" height="440" as="geometry" /></mxCell>
+        <mxCell id="f_split" value="One 70 / 30 split
+1,383 development  ·  617 final test
+groups kept together by _diversity_group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="630" y="140" width="460" height="80" as="geometry" /></mxCell>
+        <mxCell id="f_cands" value="Ten candidate fusions
+logistic · SVM · trees · splines ·
+weighted means · calibrated variants" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1130" y="140" width="500" height="80" as="geometry" /></mxCell>
+        <mxCell id="f_cv" value="Stratified 5-fold CV — development only
+scaling, calibration, hyperparameters and
+thresholds all fitted inside each fold" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="630" y="250" width="1000" height="80" as="geometry" /></mxCell>
+        <mxCell id="f_rule" value="Selection rule
+maximise mean CV balanced accuracy,
+tie-break on lower mean CV log loss" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="630" y="360" width="460" height="80" as="geometry" /></mxCell>
+        <mxCell id="f_win" value="Selected: SVM (linear)
+StandardScaler → SVC(C=0.1, probability=True)
+threshold = 0.70" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1130" y="360" width="500" height="80" as="geometry" /></mxCell>
+        <mxCell id="f_art" value="weights/fusion/selected_final_fusion.joblib   [joblib]
+model · model_name · threshold · feature_order" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="600" y="570" width="620" height="70" as="geometry" /></mxCell>
+        <mxCell id="f_test" value="Final test evaluated ONCE
+617 rows, never consulted during selection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1280" y="570" width="380" height="70" as="geometry" /></mxCell>
+        <mxCell id="hw3" value="HARDWARE — notebook 03 needs the GPU (it runs all three detectors over 2,000 images). Notebook 04 is pure scikit-learn on a 2,000×3 table: CPU only, seconds to run." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="690" width="1620" height="35" as="geometry" /></mxCell>
+        <mxCell id="note3" value="feature_order in the artifact is the contract: Workflows/classify.py reads it to decide which detectors to run and in what order. Re-running notebook 04 with a different feature set changes the CLI's behaviour without any code edit — and an unknown feature name raises rather than silently mis-ordering the fusion inputs." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="745" width="1620" height="55" as="geometry" /></mxCell>
+        <mxCell id="h1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_val" target="m_bal"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_bal" target="m_score"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_score" target="m_csv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_csv" target="f_split"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_split" target="f_cv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_cands" target="f_cv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_cv" target="f_rule"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_rule" target="f_win"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_win" target="f_art"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h10" value="held back" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_split" target="f_test"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="4. Inference" id="page-infer">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1950" pageHeight="1060" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Inference — Image to Real / AI-Generated Verdict" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1400" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="input image → three detector probabilities → selected fusion model → thresholded verdict" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1500" height="20" as="geometry" /></mxCell>
+        <mxCell id="input" value="Input
+Image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="430" width="150" height="90" as="geometry" /></mxCell>
+        <mxCell id="c1_box" value="Branch 1 — Community Forensics  (pretrained, off the shelf, no crop TTA)   [transformers]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="250" y="90" width="1000" height="130" as="geometry" /></mxCell>
+        <mxCell id="c1_bb" value="Pretrained ViT backbone
+HF: buildborderless/
+CommunityForensics-DeepfakeDet-ViT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="285" y="130" width="260" height="70" as="geometry" /></mxCell>
+        <mxCell id="c1_head" value="1-logit head → sigmoid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="585" y="130" width="190" height="70" as="geometry" /></mxCell>
+        <mxCell id="c1_prob" value="Probability 1
+Community Forensics Pr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="815" y="130" width="170" height="70" as="geometry" /></mxCell>
+        <mxCell id="c2_box" value="Branch 2 — DINOv3-L Detector  (custom-trained expert, 1.2 GB)   [PyTorch · timm]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="250" y="250" width="1000" height="220" as="geometry" /></mxCell>
+        <mxCell id="c2_crop" value="Sample 8 random
+224px crops
+(tiles if smaller)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="285" y="300" width="200" height="90" as="geometry" /></mxCell>
+        <mxCell id="c2_bb" value="DINOv3-L backbone
+frozen · attention pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="515" y="300" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="c2_fc" value="FeatureCorrection
++ head (512)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="775" y="300" width="190" height="90" as="geometry" /></mxCell>
+        <mxCell id="c2_tta" value="sigmoid each of 8
+logits, then mean" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="995" y="300" width="180" height="90" as="geometry" /></mxCell>
+        <mxCell id="c2_prob" value="Probability 2
+DINOv3-L detector Pr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1280" y="300" width="170" height="90" as="geometry" /></mxCell>
+        <mxCell id="c3_box" value="Branch 3 — DINOv3-B Stacking Detector  (frozen backbone + trained head)   [PyTorch · timm]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="250" y="500" width="1000" height="240" as="geometry" /></mxCell>
+        <mxCell id="c3_crop" value="Sample 3 random
+224px crops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="285" y="550" width="180" height="80" as="geometry" /></mxCell>
+        <mxCell id="c3_bb" value="DINOv3-B frozen
+dim 768" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="495" y="550" width="180" height="80" as="geometry" /></mxCell>
+        <mxCell id="c3_extra" value="Community Forensics
+logit  (extra_dim = 1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="495" y="645" width="180" height="75" as="geometry" /></mxCell>
+        <mxCell id="c3_cat" value="Concat +
+normalise" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="705" y="550" width="150" height="80" as="geometry" /></mxCell>
+        <mxCell id="c3_head" value="StackingHead MLP
+hidden 256 → logit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="885" y="550" width="180" height="80" as="geometry" /></mxCell>
+        <mxCell id="c3_tta" value="sigmoid ×3,
+then mean" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1095" y="550" width="130" height="80" as="geometry" /></mxCell>
+        <mxCell id="c3_prob" value="Probability 3
+DINOv3-B stacking Pr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1280" y="550" width="170" height="80" as="geometry" /></mxCell>
+        <mxCell id="fusion" value="Final Fusion Model   [scikit-learn]
+StandardScaler → SVC(linear, C=0.1)
+feature_order fixed by the artifact" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1520" y="300" width="300" height="110" as="geometry" /></mxCell>
+        <mxCell id="threshold" value="Decision threshold
+P(fake) ≥ 0.70" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1520" y="440" width="300" height="70" as="geometry" /></mxCell>
+        <mxCell id="final" value="Final Prediction
+REAL  /  FAKE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1520" y="540" width="300" height="90" as="geometry" /></mxCell>
+        <mxCell id="g_entry" value="Entry points — all three run this identical path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffbf0;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#7f6000;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="250" y="910" width="1570" height="80" as="geometry" /></mxCell>
+        <mxCell id="e_cli" value="classify.py  /  classify
+one detector resident at a time · score cache" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="280" y="950" width="480" height="28" as="geometry" /></mxCell>
+        <mxCell id="e_nb" value="notebooks/06_Full_Pipeline
+gallery + metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="800" y="950" width="460" height="28" as="geometry" /></mxCell>
+        <mxCell id="e_kaggle" value="Kaggle: aigc-detector-benchmark
+T4 · 13,843 images · 111 min" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1300" y="950" width="490" height="28" as="geometry" /></mxCell>
+        <mxCell id="hw4" value="HARDWARE — device is auto-selected CUDA → MPS → CPU (Modeling/common/device.py); no code path hardcodes a device.
+Peak VRAM is one detector, not three: each is constructed, used, then freed. Measured throughput 0.48 s/image on a Tesla T4; ~1.3 s/image on Apple MPS. CPU works and is slower.
+Disk at rest: 1.2 GB DINOv3-L + 9.8 MB stacking + 8 KB fusion, plus ~1.5 GB of Hugging Face backbone cache on first run." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="30" y="762" width="1440" height="68" as="geometry" /></mxCell>
+        <mxCell id="note4" value="Artifacts loaded: weights/dinov3/notebook_dinov3/best_robust.pt · weights/stacking/notebook_vitb/best_robust.pt · weights/fusion/selected_final_fusion.joblib
+Crop sampling is seeded by each image's position within its batch, so a probability is reproducible for a given input set but shifts slightly when the same image is scored alongside a different set." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="842" width="1440" height="52" as="geometry" /></mxCell>
+        <mxCell id="k1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="input" target="c1_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="input" target="c2_crop"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="input" target="c3_crop"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c1_bb" target="c1_head"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c1_head" target="c1_prob"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k6" value="×8 crops" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c2_crop" target="c2_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c2_bb" target="c2_fc"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k8" value="8 logits" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c2_fc" target="c2_tta"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c2_tta" target="c2_prob"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k10" value="×3 crops" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_crop" target="c3_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_bb" target="c3_cat"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_extra" target="c3_cat"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_cat" target="c3_head"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_head" target="c3_tta"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_tta" target="c3_prob"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c1_prob" target="fusion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c2_prob" target="fusion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="c3_prob" target="fusion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="fusion" target="threshold"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="threshold" target="final"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="5. Hardware and Frameworks" id="page-runtime">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1000" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Runtime — Hardware Requirements and Framework Stack" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1400" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="what each stage needs to run on, and which library owns which part of the pipeline" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1500" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_hw" value="Hardware requirements by stage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7f2fa;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#5f3a75;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="800" height="520" as="geometry" /></mxCell>
+        <mxCell id="hw_train" value="Train DINOv3-L  (notebook 01)
+CUDA GPU strongly recommended
+300M-param backbone + AMP activations
+drive memory; CPU is impractical" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="350" height="100" as="geometry" /></mxCell>
+        <mxCell id="hw_stack" value="Train stacking head  (notebook 02)
+Phase 1 cache_features: GPU — frozen ViT-B
++ CF expert over every image × 3 crops × 3
+variants. Phase 2 head.fit: CPU-feasible" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="440" y="140" width="360" height="100" as="geometry" /></mxCell>
+        <mxCell id="hw_meta" value="Score meta-dataset  (notebook 03)
+GPU: all three detectors over 2,000 images" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="265" width="350" height="70" as="geometry" /></mxCell>
+        <mxCell id="hw_fuse" value="Fit fusion  (notebook 04)
+CPU only. 2,000 × 3 table — seconds" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#38761d;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="440" y="265" width="360" height="70" as="geometry" /></mxCell>
+        <mxCell id="hw_inf" value="Inference  (classify.py / notebook 06 / Kaggle)
+CUDA → MPS → CPU, auto-selected.
+Peak VRAM = ONE detector, not three:
+each is built, used, then released." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="360" width="350" height="105" as="geometry" /></mxCell>
+        <mxCell id="hw_thr" value="Measured throughput
+Tesla T4    0.48 s / image
+Apple MPS   ~1.3 s / image
+CPU         works, slower" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="440" y="360" width="360" height="105" as="geometry" /></mxCell>
+        <mxCell id="hw_disk" value="Disk at rest — 1.2 GB DINOv3-L · 9.8 MB stacking head · 8 KB fusion artifact · ~1.5 GB Hugging Face backbone cache after first run.
+Benchmark adds ~2.9 GB of images. Kaggle's 20 GB working volume is ample; a full run peaked well under it." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="490" width="740" height="60" as="geometry" /></mxCell>
+        <mxCell id="g_gpu" value="GPU compatibility — a real constraint, not a footnote" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7f2fa;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#5f3a75;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="860" y="90" width="800" height="200" as="geometry" /></mxCell>
+        <mxCell id="gpu_ok" value="Tesla T4  (sm_75)   WORKS
+Also: any GPU of compute capability 7.0+
+(V100, A100, L4, RTX 20-series onward)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#38761d;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="890" y="140" width="370" height="100" as="geometry" /></mxCell>
+        <mxCell id="gpu_bad" value="Tesla P100  (sm_60)   FAILS
+CUDA error: no kernel image available.
+Current PyTorch builds ship no kernels
+below sm_70 — every forward pass dies." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1290" y="140" width="340" height="100" as="geometry" /></mxCell>
+        <mxCell id="g_fw" value="Framework stack — who owns what" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="860" y="320" width="800" height="500" as="geometry" /></mxCell>
+        <mxCell id="fw_torch" value="PyTorch 2.13 + torchvision 0.28
+tensors, autograd, AMP, device placement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="370" width="740" height="55" as="geometry" /></mxCell>
+        <mxCell id="fw_timm" value="timm 1.0.29
+both DINOv3 backbones (ViT-L/16, ViT-B/16)
+requires &gt;= 1.0.9 — earlier releases have no DINOv3 defs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="440" width="740" height="65" as="geometry" /></mxCell>
+        <mxCell id="fw_tf" value="transformers 5.16 + huggingface_hub 1.29
+Community Forensics ViT and its image processor; model download and cache" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="520" width="740" height="60" as="geometry" /></mxCell>
+        <mxCell id="fw_sk" value="scikit-learn 1.9  ·  joblib 1.5  ·  xgboost 3.2
+fusion model, StandardScaler, cross-validation, every reported metric; joblib persists the artifact" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="595" width="740" height="65" as="geometry" /></mxCell>
+        <mxCell id="fw_data" value="NumPy 2.4  ·  pandas 3.0  ·  Pillow 12.3  ·  SciPy 1.17
+arrays, manifests, image decode, score caches" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="675" width="740" height="55" as="geometry" /></mxCell>
+        <mxCell id="fw_net" value="requests 2.34  ·  modelscope 1.39  ·  tqdm 4.70
+ZIP range-request downloads, ModelScope file listing, progress reporting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="890" y="745" width="740" height="55" as="geometry" /></mxCell>
+        <mxCell id="hw_note" value="Versions are those installed in the project .venv (Python 3.11). requirements.txt pins lower bounds only, so newer releases are expected to work — the one hard floor is timm &gt;= 1.0.9 for the DINOv3 model definitions. Nothing in the codebase hardcodes a device: Modeling/common/device.py is the single source of truth and every script calls get_device()." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="860" width="1620" height="55" as="geometry" /></mxCell>
+        <mxCell id="r1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="hw_train" target="hw_meta"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="hw_stack" target="hw_meta"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="hw_meta" target="hw_fuse"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="hw_fuse" target="hw_inf"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="6. Degradation Engine" id="page-degrade">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1780" pageHeight="1080" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Degradation Engine — Modeling/common/degradations.py" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1500" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="one severity scale drives ten transforms; a curriculum escalates them during training; a separate fixed grid measures robustness" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1600" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_fam" value="Ten transform families — each maps the shared severity [0, 5] onto its own parameter range" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="1000" height="330" as="geometry" /></mxCell>
+        <mxCell id="f_jpeg" value="jpeg
+quality  95 → 25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_blur" value="blur
+sigma  0.0 → 2.5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="300" y="140" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_resize" value="resize
+scale  1.0 → 0.2  (down then up)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="140" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_noise" value="noise
+additive sigma  0.0 → 0.12" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="780" y="140" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_jitter" value="jitter
+bright/contrast/sat  0.0 → 0.30" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="215" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_crop" value="crop
+centre keep  1.0 → 0.65" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="300" y="215" width="220" height="55" as="geometry" /></mxCell>
+        <mxCell id="f_held" value="HELD OUT — never in the reported grid, used to measure generalisation beyond it" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="60" y="290" width="940" height="25" as="geometry" /></mxCell>
+        <mxCell id="f_webp" value="webp
+quality  95 → 30" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="325" width="220" height="50" as="geometry" /></mxCell>
+        <mxCell id="f_sharpen" value="sharpen
+amount  0.0 → 1.5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="300" y="325" width="220" height="50" as="geometry" /></mxCell>
+        <mxCell id="f_speckle" value="speckle
+multiplicative  0.0 → 0.2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="325" width="220" height="50" as="geometry" /></mxCell>
+        <mxCell id="f_cast" value="cast
+per-channel gain  0.0 → 0.25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="780" y="325" width="220" height="50" as="geometry" /></mxCell>
+        <mxCell id="sev" value="Severity → parameter
+value_at(s) = lerp(lo, hi, s/5)
+integral families round to int" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1080" y="140" width="300" height="90" as="geometry" /></mxCell>
+        <mxCell id="g_tier" value="Tiers — how many transforms, and how hard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffbf0;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#7f6000;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1080" y="260" width="660" height="200" as="geometry" /></mxCell>
+        <mxCell id="t_clean" value="clean
+0 transforms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="305" width="300" height="45" as="geometry" /></mxCell>
+        <mxCell id="t_mild" value="mild
+1–3 · severity ~ N(0.0, 2.5)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1430" y="305" width="290" height="45" as="geometry" /></mxCell>
+        <mxCell id="t_mod" value="moderate
+3–6 · severity ~ N(2.5, 2.0)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="365" width="300" height="45" as="geometry" /></mxCell>
+        <mxCell id="t_heavy" value="heavy
+6 · severity ~ N(3.5, 1.0)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1430" y="365" width="290" height="45" as="geometry" /></mxCell>
+        <mxCell id="g_cur" value="Curriculum — tier probabilities escalate across training (schedule = &quot;escalate&quot;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="470" width="1000" height="220" as="geometry" /></mxCell>
+        <mxCell id="cur0" value="Epoch 0 of 10
+clean 0.40 · mild 0.40
+moderate 0.15 · heavy 0.05" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="520" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="cur4" value="Epoch 4 of 10
+clean 0.27 · mild 0.36
+moderate 0.24 · heavy 0.14" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="390" y="520" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="cur9" value="Epoch 9 of 10
+clean 0.10 · mild 0.30
+moderate 0.35 · heavy 0.25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="720" y="520" width="280" height="80" as="geometry" /></mxCell>
+        <mxCell id="cur_note" value="clean is floored at 0.10 — the model never stops seeing undegraded images, so it cannot drift into only recognising damaged ones." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="60" y="615" width="940" height="30" as="geometry" /></mxCell>
+        <mxCell id="g_chain" value="Per-example sampling  (one training image)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7f2fa;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#5f3a75;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1080" y="490" width="660" height="320" as="geometry" /></mxCell>
+        <mxCell id="ch1" value="pick_tier(rng, weights)
+sample the tier for THIS example" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="540" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="ch2" value="sample_chain(rng, tier)
+choose k families WITHOUT replacement,
+k drawn from the tier's range" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="610" width="600" height="70" as="geometry" /></mxCell>
+        <mxCell id="ch3" value="severity ~ N(tier.mean, tier.std), clipped to [0, 5]
+then value_at() maps it into each family's range" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="695" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="ch4" value="apply_chain() — transforms applied in the sampled order" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1110" y="765" width="600" height="35" as="geometry" /></mxCell>
+        <mxCell id="g_grid" value="Evaluation axis — discrete_grid(), 14 fixed cells at the brief's exact values" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff6ec;strokeColor=#d79b00;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#8a5a00;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="730" width="1000" height="200" as="geometry" /></mxCell>
+        <mxCell id="gr_jpeg" value="jpeg  90 · 70 · 50 · 30" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="780" width="460" height="40" as="geometry" /></mxCell>
+        <mxCell id="gr_blur" value="blur  0.5 · 1.0 · 2.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="780" width="460" height="40" as="geometry" /></mxCell>
+        <mxCell id="gr_resize" value="resize  0.5 · 0.25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="835" width="460" height="40" as="geometry" /></mxCell>
+        <mxCell id="gr_noise" value="noise  0.02 · 0.05 · 0.10" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="835" width="460" height="40" as="geometry" /></mxCell>
+        <mxCell id="gr_jit" value="jitter  0.20" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="890" width="460" height="30" as="geometry" /></mxCell>
+        <mxCell id="gr_crop" value="crop  0.80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="890" width="460" height="30" as="geometry" /></mxCell>
+        <mxCell id="sep" value="THE TWO PATHS ARE SEPARATE BY DESIGN.
+Training samples continuous random severities; evaluation uses only these 14 exact cells. Reusing the training sampler to score robustness would let the model be measured on the very distribution it was tuned against." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1080" y="840" width="660" height="90" as="geometry" /></mxCell>
+        <mxCell id="n6" value="Held-out families (webp, sharpen, speckle, cast) are in the training pool but never in discrete_grid(), so the reported robustness number is measured only on the brief's six families — while the model has also seen four transforms it is never scored on. That gap is the generalisation test." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="960" width="1710" height="45" as="geometry" /></mxCell>
+        <mxCell id="d1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="f_jpeg" target="sev"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="t_clean" target="ch1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="ch1" target="ch2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="ch2" target="ch3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="ch3" target="ch4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="cur0" target="cur4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="cur4" target="cur9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d8" value="tier weights" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#9673a6;fontSize=10;dashed=1;" edge="1" parent="1" source="cur9" target="ch1"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="7. Training Loop (Notebook 01)" id="page-nb01">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1180" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Notebook 01 — DINOv3-L Training Loop, End to End" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#1a1a2e;" vertex="1" parent="1"><mxGeometry x="40" y="10" width="1500" height="30" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="paired clean/degraded views → four-term robust loss → per-epoch degradation-grid validation → best_robust.pt" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#555555;fontStyle=2;" vertex="1" parent="1"><mxGeometry x="40" y="42" width="1600" height="20" as="geometry" /></mxCell>
+        <mxCell id="g_in" value="Data in" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffbf0;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#7f6000;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="90" width="460" height="300" as="geometry" /></mxCell>
+        <mxCell id="i_man" value="manifests: train · validation · test
+(+ benchmark, for the quarantine audit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="400" height="60" as="geometry" /></mxCell>
+        <mxCell id="i_val" value="validate(frame, blocklist)
+missing files · duplicate sha256 ·
+benchmark collisions · class balance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="215" width="400" height="75" as="geometry" /></mxCell>
+        <mxCell id="i_ds" value="PairedManifestDataset
+DataConfig(pairwise=True, hflip=True,
+schedule=&quot;escalate&quot;, seed=1337)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="305" width="400" height="70" as="geometry" /></mxCell>
+        <mxCell id="g_view" value="One example → two views" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="540" y="90" width="620" height="300" as="geometry" /></mxCell>
+        <mxCell id="v_crop" value="native random crop @ 224
+(+ random horizontal flip)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="570" y="140" width="560" height="50" as="geometry" /></mxCell>
+        <mxCell id="v_clean" value="CLEAN view
+the crop, untouched" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="570" y="205" width="265" height="70" as="geometry" /></mxCell>
+        <mxCell id="v_deg" value="DEGRADED view
+same crop → sampled chain
+(page 6)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="865" y="205" width="265" height="70" as="geometry" /></mxCell>
+        <mxCell id="v_note" value="Both views come from ONE crop. The degradation is applied after cropping, so the consistency
+losses cannot exploit a resolution mismatch between the two branches." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="570" y="290" width="560" height="45" as="geometry" /></mxCell>
+        <mxCell id="g_model" value="Expert forward — both views through the same weights" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1210" y="90" width="660" height="300" as="geometry" /></mxCell>
+        <mxCell id="m_bb" value="DINOv3-L backbone (frozen)
+attention pooling · lora = False" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="140" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="m_fc" value="FeatureCorrection (residual FFN, zero-init)
+applied to the degraded features" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="205" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="m_head" value="Head: hidden 512 → 1 logit
+returns (logits, features) for each view" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="270" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="m_note" value="Only the correction module and the head receive gradients — the backbone is frozen." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="1240" y="335" width="600" height="25" as="geometry" /></mxCell>
+        <mxCell id="g_loss" value="RobustLoss — four terms  (Modeling/dinov3/losses.py)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff6ec;strokeColor=#d79b00;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#8a5a00;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="420" width="1130" height="240" as="geometry" /></mxCell>
+        <mxCell id="l_cc" value="cls_clean
+FocalLoss(gamma 2.0, alpha 0.5)
+on the clean logits
+weight 1.0 (implicit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="470" width="260" height="95" as="geometry" /></mxCell>
+        <mxCell id="l_cd" value="cls_degraded
+same focal loss on the
+degraded logits
+weight 1.00" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="340" y="470" width="260" height="95" as="geometry" /></mxCell>
+        <mxCell id="l_kl" value="kl
+Bernoulli KL, clean (detached)
+→ degraded predictions
+weight 0.50" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="620" y="470" width="260" height="95" as="geometry" /></mxCell>
+        <mxCell id="l_fm" value="feat_mse
+L2 between normalised clean
+(detached) and corrected features
+weight 0.25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="900" y="470" width="230" height="95" as="geometry" /></mxCell>
+        <mxCell id="l_sum" value="total = cls_clean + 1.00·cls_degraded + 0.50·kl + 0.25·feat_mse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="580" width="1070" height="35" as="geometry" /></mxCell>
+        <mxCell id="l_note" value="The clean branch is detached in both consistency terms, so the degraded view is pulled toward the clean one and never the reverse — the clean prediction cannot be degraded to make the pair agree." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="60" y="625" width="1070" height="30" as="geometry" /></mxCell>
+        <mxCell id="g_opt" value="Optimisation  (TrainConfig)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7f2fa;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#5f3a75;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1210" y="420" width="660" height="240" as="geometry" /></mxCell>
+        <mxCell id="o_opt" value="AdamW · lr 3e-4 · weight decay 0.02
+warmup 0.5 epoch, then cosine · grad clip 1.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="470" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="o_amp" value="AMP mixed precision · batch 32 · 10 epochs
+4 dataloader workers (not persistent — each
+worker must observe the new curriculum epoch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="535" width="600" height="70" as="geometry" /></mxCell>
+        <mxCell id="o_swa" value="SWA from 70% of training · EMA off" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="615" width="600" height="30" as="geometry" /></mxCell>
+        <mxCell id="g_val" value="Per-epoch validation — Evaluation/training_validation.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef8f0;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f6b3d;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="30" y="690" width="1130" height="250" as="geometry" /></mxCell>
+        <mxCell id="va_grid" value="Score the validation set on CLEAN plus all 14 discrete grid cells
+(max_eval_images = 2000, eval_every = 1 epoch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="740" width="1070" height="55" as="geometry" /></mxCell>
+        <mxCell id="va_clean" value="clean_auc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="810" width="250" height="45" as="geometry" /></mxCell>
+        <mxCell id="va_rob" value="robust_auc
+mean across grid cells" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b6d7a8;strokeColor=#38761d;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="330" y="810" width="260" height="45" as="geometry" /></mxCell>
+        <mxCell id="va_worst" value="worst_cell_auc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="610" y="810" width="250" height="45" as="geometry" /></mxCell>
+        <mxCell id="va_gap" value="gap = clean − robust" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="880" y="810" width="250" height="45" as="geometry" /></mxCell>
+        <mxCell id="va_note" value="Checkpoint selection maximises robust_auc, not clean_auc. Targets asserted in the notebook: robust AUC ≥ 0.85, generalisation gap ≤ 0.10." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="60" y="870" width="1070" height="30" as="geometry" /></mxCell>
+        <mxCell id="ck_best" value="weights/dinov3/notebook_dinov3/best_robust.pt
+compact inference checkpoint — selected on robust AUC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1210" y="700" width="660" height="60" as="geometry" /></mxCell>
+        <mxCell id="ck_last" value="last.pt
+full resume checkpoint (optimiser, epoch, history)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1210" y="775" width="660" height="50" as="geometry" /></mxCell>
+        <mxCell id="g_nbcheck" value="Notebook 01's own end-of-run check — NOT the final fusion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef4fc;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;fontSize=13;fontStyle=1;fontColor=#2f4f7f;spacingLeft=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="1210" y="850" width="660" height="240" as="geometry" /></mxCell>
+        <mxCell id="nb_a" value="Branch A — this detector" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="900" width="290" height="40" as="geometry" /></mxCell>
+        <mxCell id="nb_b" value="Branch B — Community Forensics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1550" y="900" width="290" height="40" as="geometry" /></mxCell>
+        <mxCell id="nb_fuse" value="Fixed weighted mean  0.70 A + 0.30 B
+weights frozen before test to avoid leakage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="955" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="nb_cal" value="TemperatureCalibrator — fitted on validation,
+saved to weights/fusion/&lt;run&gt;_temperature.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1240" y="1020" width="600" height="55" as="geometry" /></mxCell>
+        <mxCell id="warn" value="This 0.70 / 0.30 weighted mean is notebook 01's INTERNAL sanity check on its own branch. It is NOT the shipped fusion.
+The production fusion is the linear SVM selected in notebook 04 (page 3), which consumes three probabilities and applies a 0.70 THRESHOLD — a different number that happens to look alike." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="30" y="960" width="1130" height="60" as="geometry" /></mxCell>
+        <mxCell id="n7" value="Full-run configuration: 10 epochs, batch 32, input 224, crop_mode random_crop, seed 1337. TEST_MODE swaps in a vit_tiny backbone at 64px for a fast end-to-end smoke run." style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="30" y="1040" width="1130" height="40" as="geometry" /></mxCell>
+        <mxCell id="t1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="i_man" target="i_val"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="i_val" target="i_ds"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="i_ds" target="v_crop"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="v_crop" target="v_clean"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t5" value="sampled chain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="v_crop" target="v_deg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="v_clean" target="m_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="v_deg" target="m_bb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_bb" target="m_fc"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_fc" target="m_head"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="m_head" target="l_cc"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="l_cc" target="l_sum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="l_cd" target="l_sum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="l_kl" target="l_sum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="l_fm" target="l_sum"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t15" value="backward" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="l_sum" target="o_opt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="o_opt" target="o_amp"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="o_amp" target="o_swa"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t18" value="each epoch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="o_swa" target="va_grid"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="va_grid" target="va_rob"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t20" value="select max" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="va_rob" target="ck_best"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="nb_a" target="nb_fuse"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="nb_b" target="nb_fuse"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="nb_fuse" target="nb_cal"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;fontSize=10;" edge="1" parent="1" source="ck_best" target="nb_a"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

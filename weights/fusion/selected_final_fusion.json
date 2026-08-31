@@ -1,0 +1,18 @@
+{
+  "model": "SVM (linear)",
+  "threshold": 0.7,
+  "criterion": "max mean CV balanced accuracy; tie-break min mean CV log loss",
+  "test_set_used_for_selection": false,
+  "feature_order": [
+    "Community Forensics Pr",
+    "DINOv3-L detector Pr",
+    "DINOv3-B stacking detector Pr"
+  ],
+  "best_params": {
+    "model__C": 0.1
+  },
+  "development_rows": 1383,
+  "final_test_rows": 617,
+  "random_state": 1337,
+  "group_source": "_diversity_group"
+}

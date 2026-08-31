@@ -1,0 +1,76 @@
+# Overnight caching plan for the frozen ViT-B branch on Apple silicon.
+#
+# Measured on an M2 (8 cores, 16 GB): DINOv3-L 13.2 crops/s, ViT-B 40.3,
+# ViT-S 101.6. ViT-B is the pick -- 3.1x the throughput of L for a 768-d
+# feature, which is what makes the full manifests affordable without a GPU.
+# throughput_crops_per_second is deliberately conservative (decode is on the
+# CPU and competes with the model even with prefetch workers).
+
+backbone: vit_base_patch16_dinov3.lvd1689m
+crops: 3
+crop_size: 224
+workers: 4
+batch_size: 8
+manifest_dir: data/plan
+
+throughput_crops_per_second: 30
+throughput_expert_images_per_second: 30
+
+steps:
+  # Training rows. Balanced and seeded: --limit would take the head of the
+  # manifest, which is 83% AI-generated and entirely SID_Set.
+  - name: train
+    manifest: data/train/manifest.csv
+    per_class: 10000
+    seed: 1337
+    variants: [clean, "jpeg=50", "blur=1.0"]
+    experts: [community_forensics]
+
+  # Selection set. Split in half at fit time: one half fits the head and the
+  # temperature, the other selects. Never the benchmark, never the test set.
+  - name: validation
+    manifest: data/evaluation/validation_manifest.csv
+    per_class: 6000
+    seed: 20250827
+    variants: [clean, "jpeg=50", "blur=1.0"]
+    experts: [community_forensics]
+
+  # The official demonstration set (COCO val2017 + DALL-E Advanced), kept whole
+  # because it is the headline number.
+  - name: benchmark
+    manifest: data/evaluation/benchmark_manifest.csv
+    variants: [clean]
+    experts: [community_forensics]
+
+  # The brief's full transformation grid. Subsampled: 3,000 rows puts the AUC
+  # standard error near +/-0.01, which is far below the differences being read
+  # off the table.
+  - name: benchmark_grid
+    manifest: data/evaluation/benchmark_manifest.csv
+    per_class: 1500
+    seed: 4242
+    variants:
+      - clean
+      - "jpeg=90"
+      - "jpeg=70"
+      - "jpeg=50"
+      - "jpeg=30"
+      - "blur=0.5"
+      - "blur=1.0"
+      - "blur=2.0"
+      - "resize=0.5"
+      - "resize=0.25"
+      - "noise=0.02"
+      - "noise=0.05"
+      - "noise=0.1"
+      - "jitter=0.2"
+      - "crop=0.8"
+    experts: [community_forensics]
+
+  # Held-out generator families.
+  - name: test
+    manifest: data/test/manifest.csv
+    per_class: 6000
+    seed: 2024
+    variants: [clean]
+    experts: [community_forensics]

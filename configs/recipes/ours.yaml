@@ -1,0 +1,39 @@
+name: ours
+reproduces: "the lean baseline -- frozen DINOv3 + probe + curriculum + consistency"
+scaled_down: "nothing; this is the design proposed for a solo two-week build"
+
+model:
+  input_size: 224
+  crop_mode: random_crop          # native pixels, no resampling anywhere
+  head_hidden: 512
+  feature_correction: true
+  backbone:
+    name: dinov3_l                # 300M, frozen
+    pooling: attention
+    freeze: true
+    lora: false
+
+loss:                             # focal + full consistency
+  focal_gamma: 2.0
+  focal_alpha: 0.5
+  cls_degraded: 1.0
+  kl: 0.5
+  feat_mse: 0.25
+
+data:
+  manifest: data/train/manifest.csv
+  val_manifest: data/evaluation/validation_manifest.csv
+  pairwise: true
+  schedule: escalate
+  hflip: true
+
+train:
+  epochs: 10
+  batch_size: 32                  # frozen backbone, so this fits easily
+  lr: 3.0e-4                      # a probe wants a much higher lr than a fine-tune
+  weight_decay: 0.02
+  warmup_epochs: 0.5
+  amp: true
+  ema: false
+  swa: true
+  swa_start_frac: 0.7
