@@ -58,7 +58,8 @@ Ensure Git LFS is installed before pulling weights:
 
 ### 2. Environment Setup with `uv` (Recommended)
 
-[`uv`](https://github.com/astral-sh/uv) is an extremely fast Python package manager.
+[`uv`](https://github.com/astral-sh/uv) is an extremely fast Python package
+manager.
 
 - Install `uv`:
   - Linux / macOS (curl):
@@ -114,7 +115,8 @@ If you prefer standard `pip`:
 
 ### A. Run Inference
 
-Score an entire directory of images and export confidence scores to JSON:
+Score an entire directory of images and export confidence scores to JSON,
+change `path/to/data` to the image directory path:
 
 ```bash
 python scripts/run_inference.py \
@@ -212,7 +214,8 @@ the routing Stacking Head:
   python -m workflows.cache_plan configs/cache_plan.vitb.yaml
 
   # 2. Fit the Stacking MLP head
-  python -m workflows.fit_stacker --checkpoint checkpoints/stacking/notebook_vitb/best_robust.pt
+  python -m workflows.fit_stacker \
+    --checkpoint checkpoints/stacking/notebook_vitb/best_robust.pt
   ```
 - **Output Checkpoint**: `checkpoints/stacking/notebook_vitb/best_robust.pt`
 
@@ -240,7 +243,7 @@ Assemble the 3-detector probability matrix and select the optimal fusion algorit
 
 ---
 
-### Step 5: Full Benchmark Evaluation
+### Step 5: Benchmark Evaluation & Analysis
 
 Evaluate the final fused pipeline across clean and degraded benchmarks:
 
@@ -255,12 +258,12 @@ Evaluate the final fused pipeline across clean and degraded benchmarks:
 
 2. **Robustness Degradation Grid Analysis**:
    Generate degradation performance curves across JPEG, Blur, Resize, Noise,
-   Jitter, and Crop transformations:
-   ```bash
-   python -m workflows.grid_from_cache \
-     --cache-dir cache/features \
-     --checkpoint checkpoints/stacking/notebook_vitb/best_robust.pt
-   ```
+   Jitter, and Crop transformations in
+   [`notebooks/07_Demo_Result.ipynb`](notebooks/07_Demo_Result.ipynb).
+
+3. **Performance Analysis**:
+   False Positive and False Negative analysis in
+   [`notebooks/08_Performance_Analysis.ipynb`](notebooks/08_Performance_Analysis.ipynb).
 
 ---
 
@@ -270,13 +273,13 @@ Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,84
 
 | Metric                                     | Score (Clean Images) | Score (Transformed Images) |
 | ------------------------------------------ | -------------------- | -------------------------- |
-| **ROC AUC**                                | **0.999695**         | **0.996218**               |
-| **Accuracy**                               | **0.973268**         | **0.946319**               |
-| **F1**                                     | **0.978652**         | **0.954985**               |
-| **Precision**                              | **0.999058**         | **0.991267**               |
-| **Recall / Sensitivity**                   | **0.959064**         | **0.924622**               |
-| **Specificity**                            | **0.998399**         | **0.984708**               |
-| **Matthews Correlation Coefficient (MCC)** | **0.944351**         | **0.895420**               |
+| **ROC AUC**                                | **99.96%**           | **99.62%**                 |
+| **Accuracy**                               | **97.32%**           | **94.63%**                 |
+| **F1**                                     | **97.86%**           | **95.49%**                 |
+| **Precision**                              | **99.90%**           | **99.12%**                 |
+| **Recall / Sensitivity**                   | **95.90%**           | **92.46%**                 |
+| **Specificity**                            | **99.83%**           | **98.47%**                 |
+| **Matthews Correlation Coefficient (MCC)** | **94.43%**           | **89.54%**                 |
 
 ---
 
