@@ -30,13 +30,19 @@ class DINOv3Scorer(Scorer):
         self.device = get_device(device)
         self.n_crops = n_crops
         self.seed = seed
-        state = torch.load(Path(checkpoint), map_location=self.device)
+        state = torch.load(
+            Path(checkpoint), map_location=self.device, weights_only=False
+        )
         raw = dict(state.get("model_config") or {})
         if not raw:
-            raise RuntimeError("checkpoint has no model_config; retrain or use a new-format checkpoint")
+            raise RuntimeError(
+                "checkpoint has no model_config; retrain or use a new-format checkpoint"
+            )
         backbone = BackboneConfig(**raw.pop("backbone"))
         allowed = {field.name for field in fields(ExpertConfig)} - {"backbone"}
-        config = ExpertConfig(backbone=backbone, **{k: v for k, v in raw.items() if k in allowed})
+        config = ExpertConfig(
+            backbone=backbone, **{k: v for k, v in raw.items() if k in allowed}
+        )
         self.model = Expert(config).to(self.device)
         self.model.load_state_dict(state["model"])
         self.model.eval()
