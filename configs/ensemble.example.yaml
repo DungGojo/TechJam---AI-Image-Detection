@@ -2,7 +2,7 @@
 experts:
   dinov3:
     model: dinov3
-    checkpoint: weights/dinov3/notebook_dinov3/best_robust.pt
+    checkpoint: checkpoints/dinov3/notebook_dinov3/best_robust.pt
   community_forensics:
     model: community_forensics
 
@@ -12,6 +12,6 @@ fusion:
     dinov3: 0.7
     community_forensics: 0.3
 
-# Replace with `calibration: weights/fusion/temperature.json` after fitting T.
+# Replace with `calibration: checkpoints/fusion/temperature.json` after fitting T.
 calibration:
   temperature: 1.0
