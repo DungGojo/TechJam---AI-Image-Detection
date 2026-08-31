@@ -14,17 +14,17 @@ cross-validated Linear SVM model.
 
 ![Architecture Overview](assets/inference_simple.png)
 
-### Tri-Branch Design
+### Tri-Expert Design
 
-1. **Branch 1 (Community Forensics ViT-S/16)**: An independent off-the-shelf
+1. **Expert 1 (CommunityForensics-DeepfakeDet-ViT)**: An independent off-the-shelf
    forensic baseline extracting uncalibrated artifact signals.
-2. **Branch 2 (DINOv3-Large Detector)**: A 300M-parameter DINOv3 foundation
-   backbone fine-tuned using a 4-term robust objective (Clean Focal + Degraded
-   Focal + Prediction Bernoulli KL Divergence + Feature MSE) with Attention
-   Pooling and 8-crop test-time aggregation.
-3. **Branch 3 (Frozen DINOv3-Base Stacking Head)**: A lightweight multi-layer
-   perceptron trained on memory-mapped frozen ViT-B embeddings across
-   degradation curricula, conditioned on Branch 1 forensic logits.
+2. **Expert 2 (Frozen DINOv3-Large + Detector Head)**: A frozen 300M-parameter
+   DINOv3-ViT-L backbone with Detector Head trained using a 4-term robust
+   objective (Clean Focal + Degraded Focal + Prediction Bernoulli KL Divergence
+   - Feature MSE) with Attention Pooling and 8-crop test-time aggregation.
+3. **Expert 3 (Frozen DINOv3-Base + Stacking Head)**: A frozen 85M-parameter
+   DINOv3-ViT-B backbone with a lightweight multi-layer perceptron trained
+   across degradation augmentations, conditioned on Expert 1 forensic logits.
 4. **Hierarchical Fusion**: A calibrated Linear Support Vector Machine fusing
    the three probability branches to produce the final $P(\text{AI-Generated})$
    verdict.
@@ -112,15 +112,19 @@ If you prefer standard `pip`:
 
 ## Running Inference & Predictions
 
-### A. Testing an Image Directory
+### A. Run Inference
 
 Score an entire directory of images and export confidence scores to JSON:
 
 ```bash
-python scripts/run_inference.py --input path/to/data/ --output outputs/predictions.json
+python scripts/run_inference.py \
+  --input path/to/data/ \
+  --output outputs/predictions.json
 ```
 
-**Output JSON Structure**:
+**Output JSON Structure**: `pred` score indicating the likelihood that the
+image is AIGC-generated range from 0 to 1, with 1 being most confidence that
+the image is AIGC-generated.
 
 ```json
 [
@@ -139,20 +143,26 @@ python scripts/run_inference.py --input path/to/data/ --output outputs/predictio
 
 ### B. Ground-Truth evaluation
 
-Evaluate ground-truth labels inferred from parent folder names (`real/` vs `fake/`) and report full metrics:
+Evaluate ground-truth labels inferred from parent folder names (`real/` vs
+`fake/`) and report full metrics:
 
 ```bash
-python scripts/run_inference.py --input path/to/data/ --evaluate
+python scripts/run_inference.py \
+  --input path/to/data/ \
+  --evaluate
 ```
 
 ---
 
 ### C. Export to CSV
 
-Export per-image prediction probabilities and individual detector branch scores to CSV:
+Export per-image prediction probabilities and individual detector branch scores
+to CSV:
 
 ```bash
-python scripts/run_inference.py --input path/to/data/ --output outputs/predictions.csv
+python scripts/run_inference.py \
+  --input path/to/data/ \
+  --output outputs/predictions.csv
 ```
 
 ---
@@ -178,9 +188,9 @@ python -m data_pipeline.sources.download_eval_only
 
 ---
 
-### Step 2: Train Branch 1 (DINOv3-L Fine-Tuning)
+### Step 2: Train Expert 2 (Frozen DINOv3-Large + Detector Head)
 
-Fine-tune the primary DINOv3-Large detector using Attention Pooling, 6-family
+Frozen DINOv3-Large with detector trained using Attention Pooling, 6-family
 degradation curriculum, and the 4-term robust objective:
 
 - **Command Line**:
@@ -191,7 +201,7 @@ degradation curriculum, and the 4-term robust objective:
 
 ---
 
-### Step 3: Train Branch 2 (ViT-B Feature Caching & Stacking Head)
+### Step 3: Train Expert 3 (Frozen DINOv3-Base + Feature Caching & Stacking Head)
 
 Cache frozen multi-crop DINOv3-Base embeddings to memory-mapped files and train
 the routing Stacking Head:
@@ -216,12 +226,17 @@ Assemble the 3-detector probability matrix and select the optimal fusion algorit
    Score validation images across all three detector branches and export the tabular meta-dataset:
 
    ```bash
-   python scripts/run_inference.py --input data/evaluation/images/validation --csv outputs/meta_dataset.csv
+   python scripts/run_inference.py \
+     --input data/evaluation/images/validation \
+     --csv outputs/meta_dataset.csv
    ```
 
 2. **Train & Select Fusion Model**:
-   Compare classifier families (Linear SVM, Logistic Regression, XGBoost, Decision Trees) across 5-fold cross-validation in [`notebooks/04_Learn_Best_Final_Fusion.ipynb`](notebooks/04_Learn_Best_Final_Fusion.ipynb).
-   - **Output Artifact**: `checkpoints/fusion/selected_final_fusion.joblib` (Calibrated Linear SVM, decision threshold $\tau = 0.70$).
+   Compare classifier families (Linear SVM, Logistic Regression, XGBoost,
+   Decision Trees) across 5-fold cross-validation in
+   [`notebooks/04_Learn_Best_Final_Fusion.ipynb`](notebooks/04_Learn_Best_Final_Fusion.ipynb).
+   - **Output Artifact**: `checkpoints/fusion/selected_final_fusion.joblib`
+     (Calibrated Linear SVM, decision threshold $\tau = 0.70$).
 
 ---
 
@@ -229,17 +244,22 @@ Assemble the 3-detector probability matrix and select the optimal fusion algorit
 
 Evaluate the final fused pipeline across clean and degraded benchmarks:
 
-1. **Benchmark Evaluation (CLI)**:
-   Run full tri-branch evaluation on the 13,843 quarantined benchmark images:
+1. **Benchmark Evaluation**:
+   Run full tri-expert evaluation on the 13,843 quarantined benchmark images:
 
    ```bash
-   python scripts/run_inference.py --input data/evaluation/images/benchmark --evaluate
+   python scripts/run_inference.py \
+     --input data/evaluation/images/benchmark \
+     --evaluate
    ```
 
-2. **Robustness Degradation Grid Analysis (CLI)**:
-   Generate degradation performance curves across JPEG, Blur, Resize, Noise, Jitter, and Crop transformations:
+2. **Robustness Degradation Grid Analysis**:
+   Generate degradation performance curves across JPEG, Blur, Resize, Noise,
+   Jitter, and Crop transformations:
    ```bash
-   python -m workflows.grid_from_cache --cache-dir cache/features --checkpoint checkpoints/stacking/notebook_vitb/best_robust.pt
+   python -m workflows.grid_from_cache \
+     --cache-dir cache/features \
+     --checkpoint checkpoints/stacking/notebook_vitb/best_robust.pt
    ```
 
 ---
@@ -248,15 +268,15 @@ Evaluate the final fused pipeline across clean and degraded benchmarks:
 
 Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,843 Fake DALL·E 3):
 
-| Metric                                     | Score      |
-| ------------------------------------------ | ---------- |
-| **ROC AUC**                                | **0.9978** |
-| **Accuracy**                               | **0.9724** |
-| **Balanced Accuracy**                      | **0.9775** |
-| **Precision**                              | **0.9975** |
-| **Recall / Sensitivity**                   | **0.9592** |
-| **Specificity**                            | **0.9958** |
-| **Matthews Correlation Coefficient (MCC)** | **0.9424** |
+| Metric                                     | Score (Clean Images) | Score (Transformed Images) |
+| ------------------------------------------ | -------------------- | -------------------------- |
+| **ROC AUC**                                | **0.999695**         | **0.996218**               |
+| **Accuracy**                               | **0.973268**         | **0.946319**               |
+| **F1**                                     | **0.978652**         | **0.954985**               |
+| **Precision**                              | **0.999058**         | **0.991267**               |
+| **Recall / Sensitivity**                   | **0.959064**         | **0.924622**               |
+| **Specificity**                            | **0.998399**         | **0.984708**               |
+| **Matthews Correlation Coefficient (MCC)** | **0.944351**         | **0.895420**               |
 
 ---
 
@@ -272,7 +292,7 @@ Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,84
 ├── notebooks/              # Step-by-step training, fusion, and evaluation notebooks
 ├── scripts/
 │   └── run_inference.py    # Inference and evaluation script
-├── checkpoints/                # Checkpoints (DINOv3-L, Stacking ViT-B, Linear SVM)
+├── checkpoints/            # Checkpoints (Expert 2, Expert 3, Linear SVM parameters)
 ├── pyproject.toml          # Packaging metadata & dependency groups
 ├── requirements.txt        # Dependencies requirements for `pip`
 ├── LICENSE.md              # Project and model licensing
