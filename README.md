@@ -327,7 +327,7 @@ Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,84
 | Name                   | Contribution                |
 | ---------------------- | --------------------------- |
 | **Nguyen Viet Dung**   | - Research and Modeling     |
-|                        | - Performance Analysis      |
+|                        | - Model Evaluation and Error Analysis      |
 | **Duong Hoang Vu Lam** | - Research and Optimization |
 |                        | - Documentation             |
 | **Teo Wei Yew**        | - Research and Optimization |
