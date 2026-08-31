@@ -324,7 +324,7 @@ Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,84
 
 ## Contributions
 
-| Name (Email)           | Contribution                |
+| Name                   | Contribution                |
 | ---------------------- | --------------------------- |
 | **Nguyen Viet Dung**   | - Research and Modeling     |
 |                        | - Performance Analysis      |
