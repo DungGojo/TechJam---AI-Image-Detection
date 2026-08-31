@@ -283,6 +283,60 @@ Evaluated on 13,843 quarantined benchmark images (5,000 Real COCO val2017 + 8,84
 
 ---
 
+## Limitations
+
+### Current Limitations
+
+- **Computational Overhead & Latency**: The tri-expert architecture
+  (CommunityForensics ViT, frozen DINOv3-Large with 8-crop TTA, and DINOv3-Base
+  stacker) delivers strong accuracy and robustness but incurs higher memory
+  footprint and inference latency than a single compact model.
+- **Extreme Degradations**: While robust against typical real-world
+  corruptions, severe perturbations—such as aggressive JPEG compression ($Q \le
+  30$), heavy downscaling ($0.25\times$), or extreme Gaussian noise ($\sigma
+  \ge 0.10$)—can destroy fine-grained forensic artifacts, resulting in false
+  negatives on subtle AI generations or false positives on degraded real
+  photos.
+- **Generalization to Emerging Generators**: The system is calibrated primarily
+  against current diffusion and generative baselines. Novel generation
+  paradigms (e.g., flow-matching models, newer Midjourney/FLUX iterations) and
+  localized inpainting may induce distribution shifts.
+- **Static Decision Thresholding**: The meta-fusion Linear SVM threshold ($\tau
+  = 0.70$) is tuned on a balanced validation split and may require adaptive
+  calibration under severe class imbalance in production environments.
+
+### What We Would Improve (Given More Time)
+
+- **Knowledge Distillation**: Distill the multi-expert ensemble into a unified,
+  lightweight student network (e.g., EfficientNet, FastViT) to significantly
+  reduce inference latency and enable edge deployment.
+- **Spectral & Frequency-Domain Features**: Incorporate explicit
+  frequency-domain representations (e.g., DCT, FFT, SRM filters) to capture
+  persistent artifact signals that survive spatial-domain compression.
+- **Dynamic Cascade Inference**: Implement confidence-aware early exiting,
+  bypassing heavy multi-crop TTA and secondary expert branches for
+  high-confidence samples to optimize throughput.
+- **Continuous Pretraining on Diverse Generators**: Expand training coverage to
+  encompass a broader spectrum of latest generative architectures, adversarial
+  perturbation training, and mixed real/synthetic composition datasets.
+
+---
+
+## Contributions
+
+| Name (Email)           | Contribution                |
+| ---------------------- | --------------------------- |
+| **Nguyen Viet Dung**   | - Research and Modeling     |
+|                        | - Performance Analysis      |
+| **Duong Hoang Vu Lam** | - Research and Optimization |
+|                        | - Documentation             |
+| **Teo Wei Yew**        | - Research and Optimization |
+|                        | - Documentation             |
+| **Nguyen Thuy An**     | - Presentation              |
+|                        | - Documentation             |
+
+---
+
 ## Directory Structure
 
 ```text
